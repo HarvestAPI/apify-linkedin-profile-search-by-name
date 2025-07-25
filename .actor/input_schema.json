@@ -12,15 +12,15 @@
     },
     "firstName": {
       "title": "First Name",
-      "type": "array",
+      "type": "string",
       "editor": "textfield",
       "description": "First name of the person to search for. ",
       "prefill": "Satya"
     },
     "lastName": {
       "title": "Last Name",
-      "type": "array",
-      "editor": "stringList",
+      "type": "string",
+      "editor": "textfield",
       "description": "Last name of the person to search for.",
       "prefill": "Nadella"
     },
