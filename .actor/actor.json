@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "linkedin-profile-search-by-name",
+  "title": "LinkedIn Profile Search by name Scraper",
+  "description": "Search for LinkedIn profiles by name with filters and extract detailed profile information, including work experience, education history, location and more. No cookies or account required. Concurrency + fast response times make mass scraping fast ⚡",
+  "version": "0.0",
+  "minMemoryMbytes": 128,
+  "maxMemoryMbytes": 256,
+  "usesStandbyMode": false,
+  "input": "./input_schema.json",
+  "dockerfile": "./Dockerfile"
+}

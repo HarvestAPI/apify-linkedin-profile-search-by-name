@@ -1,0 +1,84 @@
+{
+  "title": "Search LinkedIn Profiles by name",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "profileScraperMode": {
+      "title": "Profile Scraper Mode",
+      "type": "string",
+      "enum": ["Short ($4 per 1k)", "Full ($8 per 1k)"],
+      "description": "Choose the mode for scraping LinkedIn profiles. The Short mode provides basic information, while the Full mode includes full detailed profile data.",
+      "prefill": "Full ($8 per 1k)"
+    },
+    "firstName": {
+      "title": "First Name",
+      "type": "array",
+      "editor": "textfield",
+      "description": "First name of the person to search for. ",
+      "prefill": "Satya"
+    },
+    "lastName": {
+      "title": "Last Name",
+      "type": "array",
+      "editor": "stringList",
+      "description": "Last name of the person to search for.",
+      "prefill": "Nadella"
+    },
+
+    "maxItems": {
+      "title": "Maximum number of profiles to scrape for all queries",
+      "type": "integer",
+      "description": "Maximum number of profiles to scrape for all queries. The actor will stop scraping when this limit is reached.",
+      "prefill": 20
+    },
+    "locations": {
+      "title": "Locations Filter",
+      "type": "array",
+      "editor": "stringList",
+      "description": "Filter Profiles by these LinkedIn locations. Example: `San Francisco`. LinkedIn does not always understand your text queries. For example for \"UK\" query it will apply \"Ukraine\" location, so you should use \"United Kingdom\" in this case. Try this out first in the location filter input of LinkedIn search at `https://www.linkedin.com/search/results/people/?geoUrn=%5B%22103644278%22%5D` - we will use the first suggestion from the autocomplete popup when you type your location",
+      "prefill": ["Redmond Washington", "California"],
+      "maxItems": 10
+    },
+    "currentCompanies": {
+      "title": "Current Company Filter",
+      "type": "array",
+      "editor": "stringList",
+      "description": "Filter Profiles by these LinkedIn companies. Provide full LinkedIn URLs",
+      "maxItems": 10,
+      "prefill": [
+        "https://www.linkedin.com/company/microsoft",
+        "https://www.linkedin.com/company/google"
+      ]
+    },
+    "pastCompanies": {
+      "title": "Past Company Filter",
+      "type": "array",
+      "editor": "stringList",
+      "description": "Filter Profiles by these LinkedIn past companies. Provide full LinkedIn URLs",
+      "maxItems": 10
+    },
+    "schools": {
+      "title": "School Filter",
+      "type": "array",
+      "editor": "stringList",
+      "description": "Filter Profiles by these LinkedIn schools. Example: `Stanford University`.",
+      "maxItems": 10
+    },
+    "currentJobTitles": {
+      "title": "Current Job Title Filter (exact search)",
+      "type": "array",
+      "editor": "stringList",
+      "description": "Filter Profiles by these LinkedIn current job titles. Example: `Software Engineer`.",
+      "maxItems": 20
+    },
+    "industryIds": {
+      "title": "Industry IDs Filter",
+      "type": "array",
+      "editor": "stringList",
+      "description": "Filter Profiles by these LinkedIn industry IDs. Example: `4` for 'Software Development'. Full list: `https://github.com/HarvestAPI/linkedin-industry-codes-v2/blob/main/linkedin_industry_code_v2_all_eng_with_header.csv`",
+      "maxItems": 20,
+      "prefill": ["4", "5", "6"]
+    }
+  },
+  "required": ["firstName", "lastName", "profileScraperMode"]
+}
