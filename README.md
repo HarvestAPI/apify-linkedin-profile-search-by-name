@@ -2,6 +2,8 @@
 
 Our powerful tool helps you search all LinkedIn Profiles by name and filter by companies, job titles, locations and more without compromising security or violating platform policies.
 
+Compared to our another [LinkedIn Profile Search Scraper](https://apify.com/harvestapi/linkedin-profile-search), this scraper may not find every profile on LinkedIn, but it is cheaper and does not apply rate limits.
+
 ## How It Works
 
 1. Choose Profile Scraper Mode

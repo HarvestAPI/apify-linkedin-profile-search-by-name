@@ -139,9 +139,10 @@ const pushItem = async (item: Profile | ProfileShort, payments: string[]) => {
       state.lastPromise = Actor.pushData(item, 'full-profile');
     }
     if (profileScraperMode === ProfileScraperMode.EMAIL) {
-      state.lastPromise = Actor.pushData(item, 'full-profile');
       if ((payments || []).includes('linkedinProfileWithEmail')) {
-        Actor.charge({ eventName: 'short-profile' });
+        state.lastPromise = Actor.pushData(item, 'full-profile-with-email');
+      } else {
+        state.lastPromise = Actor.pushData(item, 'full-profile');
       }
     }
   } else {
