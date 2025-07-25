@@ -6,9 +6,9 @@
     "profileScraperMode": {
       "title": "Profile Scraper Mode",
       "type": "string",
-      "enum": ["Short ($4 per 1k)", "Full ($8 per 1k)"],
+      "enum": ["Short ($2 per 1k)", "Full ($6 per 1k)"],
       "description": "Choose the mode for scraping LinkedIn profiles. The Short mode provides basic information, while the Full mode includes full detailed profile data.",
-      "prefill": "Full ($8 per 1k)"
+      "prefill": "Full ($6 per 1k)"
     },
     "firstName": {
       "title": "First Name",

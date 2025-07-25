@@ -5,7 +5,6 @@ import {
   Profile,
   ProfileShort,
   ScrapeLinkedinProfilesParams,
-  ScrapeLinkedinSalesNavLeadsParams,
 } from '@harvestapi/scraper';
 import { Actor } from 'apify';
 import { config } from 'dotenv';
@@ -100,8 +99,6 @@ const cm = Actor.getChargingManager();
 const pricingInfo = cm.getPricingInfo();
 const isPaying = (user as Record<string, any> | null)?.isPaying === false ? false : true;
 
-let totalRuns = 0;
-
 const state: {
   lastPromise: Promise<any> | null;
   leftItems: number;
@@ -167,7 +164,6 @@ const scraper = createLinkedinScraper({
     'x-apify-user-is-paying2': String(isPaying),
     'x-apify-max-total-charge-usd': String(pricingInfo.maxTotalChargeUsd),
     'x-apify-is-pay-per-event': String(pricingInfo.isPayPerEvent),
-    'x-apify-user-runs': String(totalRuns),
     'x-apify-user-left-items': String(state.leftItems),
     'x-apify-user-max-items': String(input.maxItems),
   },
