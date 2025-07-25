@@ -8,8 +8,8 @@ Compared to our another [LinkedIn Profile Search Scraper](https://apify.com/harv
 
 1. Choose Profile Scraper Mode
 
-- Short ($4 per 1000) will outputs full name, profile URL, summary, location, current positions.
-- Full ($8 per 1000) will output full profile data including complete work experience, education, skills, and more.
+- Short ($2 per 1000) will outputs full name, profile URL, summary, location, current positions.
+- Full ($6 per 1000) will output full profile data including complete work experience, education, skills, and more.
 
 2. Provide any the following search parameters to find LinkedIn profiles:
 
