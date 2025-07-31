@@ -131,22 +131,18 @@ const pushItem = async (item: Profile | ProfileShort, payments: string[]) => {
   console.info(`Scraped profile ${item.linkedinUrl || item?.publicIdentifier || item?.id}`);
   state.scrapedItems += 1;
 
-  if (pricingInfo.isPayPerEvent) {
-    if (profileScraperMode === ProfileScraperMode.SHORT) {
-      state.lastPromise = Actor.pushData(item, 'short-profile');
-    }
-    if (profileScraperMode === ProfileScraperMode.FULL) {
+  if (profileScraperMode === ProfileScraperMode.SHORT) {
+    state.lastPromise = Actor.pushData(item);
+  }
+  if (profileScraperMode === ProfileScraperMode.FULL) {
+    state.lastPromise = Actor.pushData(item, 'full-profile');
+  }
+  if (profileScraperMode === ProfileScraperMode.EMAIL) {
+    if ((payments || []).includes('linkedinProfileWithEmail')) {
+      state.lastPromise = Actor.pushData(item, 'full-profile-with-email');
+    } else {
       state.lastPromise = Actor.pushData(item, 'full-profile');
     }
-    if (profileScraperMode === ProfileScraperMode.EMAIL) {
-      if ((payments || []).includes('linkedinProfileWithEmail')) {
-        state.lastPromise = Actor.pushData(item, 'full-profile-with-email');
-      } else {
-        state.lastPromise = Actor.pushData(item, 'full-profile');
-      }
-    }
-  } else {
-    state.lastPromise = Actor.pushData(item);
   }
 };
 
@@ -200,6 +196,11 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
 
       return { skipped: true };
     },
+  },
+  onPageFetched: async ({ data }) => {
+    if (data?.pagination && data?.status !== 429) {
+      Actor.charge({ eventName: 'search-page' });
+    }
   },
   disableLog: true,
   overrideConcurrency: profileScraperMode === ProfileScraperMode.EMAIL ? 10 : 8,
