@@ -231,8 +231,6 @@ for (const key of Object.keys(itemQuery) as (keyof typeof itemQuery)[]) {
   }
 }
 
-let requestSuccess = false;
-
 await scraper.scrapeProfiles({
   query: itemQuery,
   ...scrapeParams,
@@ -241,7 +239,6 @@ await scraper.scrapeProfiles({
     if (data?.status === 429) {
       console.error('Too many requests');
     } else if (data?.pagination) {
-      requestSuccess = true;
       console.info(`Found ${data.pagination.totalElements} profiles total.`);
     }
   },
@@ -252,10 +249,6 @@ await scraper.scrapeProfiles({
     'x-queue-size': isPaying ? '20' : '5',
   },
 });
-
-if (state.scrapedItems <= 5 && requestSuccess) {
-  Actor.charge({ eventName: 'actor-start' });
-}
 
 await state.lastPromise;
 
