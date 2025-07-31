@@ -204,7 +204,7 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
   },
   disableLog: true,
   overrideConcurrency: profileScraperMode === ProfileScraperMode.EMAIL ? 10 : 8,
-  overridePageConcurrency: 2,
+  overridePageConcurrency: 1,
 };
 
 if (state.leftItems <= 0) {
