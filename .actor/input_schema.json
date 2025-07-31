@@ -77,6 +77,14 @@
       "editor": "stringList",
       "description": "Filter Profiles by these LinkedIn industry IDs. Example: `4` for 'Software Development'. Full list: `https://github.com/HarvestAPI/linkedin-industry-codes-v2/blob/main/linkedin_industry_code_v2_all_eng_with_header.csv`",
       "maxItems": 20
+    },
+    "maxPages": {
+      "title": "Maximum number of pages to scrape",
+      "type": "integer",
+      "description": "Maximum number of pages to scrape for each query. The actor will stop scraping when this limit is reached.",
+      "prefill": 100,
+      "minimum": 1,
+      "maximum": 100
     }
   },
   "required": ["firstName", "lastName", "profileScraperMode"]

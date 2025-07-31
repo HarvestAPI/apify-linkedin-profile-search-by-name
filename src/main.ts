@@ -42,6 +42,7 @@ interface Input {
   locations?: string[];
   industryIds?: string[];
   maxItems?: number;
+  maxPages?: number;
 }
 
 // Structure of input is defined in input_schema.json
@@ -50,6 +51,12 @@ if (!input) throw new Error('Input is missing!');
 
 input.firstName = (input.firstName || '').trim();
 input.lastName = (input.lastName || '').trim();
+if (!input.maxPages || isNaN(input.maxPages)) {
+  input.maxPages = 100;
+}
+if (input.maxPages < 1 || input.maxPages > 100) {
+  input.maxPages = 100;
+}
 
 if (!input.firstName || !input.lastName) {
   console.warn(
@@ -196,11 +203,26 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
 
       return { skipped: true };
     },
+    maxPages: input.maxPages || 100,
   },
   onPageFetched: async ({ data }) => {
     if (data?.pagination && data?.status !== 429) {
       Actor.charge({ eventName: 'search-page' });
     }
+  },
+
+  onFirstPageFetched: ({ data }) => {
+    if (data?.status === 429) {
+      console.error('Too many requests');
+    } else if (data?.pagination) {
+      console.info(`Found ${data.pagination.totalElements} profiles total.`);
+    }
+  },
+
+  addListingHeaders: {
+    'x-sub-user': (isPaying ? user?.username : '') || '',
+    'x-concurrency': (isPaying ? '' : '1') || '',
+    'x-queue-size': isPaying ? '20' : '5',
   },
   disableLog: true,
   overrideConcurrency: profileScraperMode === ProfileScraperMode.EMAIL ? 10 : 8,
@@ -235,19 +257,6 @@ await scraper.scrapeProfiles({
   query: itemQuery,
   ...scrapeParams,
   maxItems: state.leftItems,
-  onFirstPageFetched: ({ data }) => {
-    if (data?.status === 429) {
-      console.error('Too many requests');
-    } else if (data?.pagination) {
-      console.info(`Found ${data.pagination.totalElements} profiles total.`);
-    }
-  },
-
-  addListingHeaders: {
-    'x-sub-user': (isPaying ? user?.username : '') || '',
-    'x-concurrency': (isPaying ? '' : '1') || '',
-    'x-queue-size': isPaying ? '20' : '5',
-  },
 });
 
 await state.lastPromise;
