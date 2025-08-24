@@ -208,7 +208,7 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
 
       return { skipped: true };
     },
-    maxPages: input.maxPages || 100,
+    maxPageNumber: input.maxPages || 100,
   },
   onPageFetched: async ({ data }) => {
     if (data?.pagination && data?.status !== 429) {
