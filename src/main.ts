@@ -107,12 +107,10 @@ const pricingInfo = cm.getPricingInfo();
 const isPaying = (user as Record<string, any> | null)?.isPaying === false ? false : true;
 
 const state: {
-  lastPromise: Promise<any> | null;
   leftItems: number;
   scrapedItems: number;
 } = {
   scrapedItems: 0,
-  lastPromise: null,
   leftItems: actorMaxPaidDatasetItems || 1000000,
 };
 if (input.maxItems && input.maxItems < state.leftItems) {
@@ -137,19 +135,26 @@ if (!isPaying) {
 const pushItem = async (item: Profile | ProfileShort, payments: string[]) => {
   console.info(`Scraped profile ${item.linkedinUrl || item?.publicIdentifier || item?.id}`);
   state.scrapedItems += 1;
+  let pushResult: { eventChargeLimitReached: boolean } | null = null;
 
   if (profileScraperMode === ProfileScraperMode.SHORT) {
-    state.lastPromise = Actor.pushData(item);
+    await Actor.pushData(item);
   }
   if (profileScraperMode === ProfileScraperMode.FULL) {
-    state.lastPromise = Actor.pushData(item, 'full-profile');
+    pushResult = await Actor.pushData(item, 'full-profile');
   }
   if (profileScraperMode === ProfileScraperMode.EMAIL) {
     if ((payments || []).includes('linkedinProfileWithEmail')) {
-      state.lastPromise = Actor.pushData(item, 'full-profile-with-email');
+      pushResult = await Actor.pushData(item, 'full-profile-with-email');
     } else {
-      state.lastPromise = Actor.pushData(item, 'full-profile');
+      pushResult = await Actor.pushData(item, 'full-profile');
     }
+  }
+
+  if (pushResult?.eventChargeLimitReached) {
+    await Actor.exit({
+      statusMessage: 'max charge reached',
+    });
   }
 };
 
@@ -258,8 +263,6 @@ await scraper.scrapeProfiles({
   ...scrapeParams,
   maxItems: state.leftItems,
 });
-
-await state.lastPromise;
 
 if (isFreeUserExceeding) {
   logFreeUserExceeding();

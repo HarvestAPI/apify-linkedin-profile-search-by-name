@@ -16,5 +16,4 @@ storage/key_value_stores/*
 !storage/key_value_stores/default
 storage/key_value_stores/default/*
 !storage/key_value_stores/default/INPUT.json
-pnpm-lock.yaml
 src/temp
