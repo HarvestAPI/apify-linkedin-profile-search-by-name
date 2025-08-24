@@ -184,6 +184,7 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
   onItemScraped: async ({ item, payments }) => {
     return pushItem(item, payments || []);
   },
+  takePages: input.maxPages || 100,
   optionsOverride: {
     fetchItem: async ({ item }) => {
       if (item?.id || item?.linkedinUrl) {
@@ -208,7 +209,7 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
 
       return { skipped: true };
     },
-    maxPageNumber: input.maxPages || 100,
+    maxPageNumber: 100,
   },
   onPageFetched: async ({ data }) => {
     if (data?.pagination && data?.status !== 429) {
