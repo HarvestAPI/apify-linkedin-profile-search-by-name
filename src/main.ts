@@ -107,30 +107,10 @@ const pricingInfo = cm.getPricingInfo();
 const isPaying = (user as Record<string, any> | null)?.isPaying === false ? false : true;
 
 const state: {
-  leftItems: number;
   scrapedItems: number;
 } = {
   scrapedItems: 0,
-  leftItems: actorMaxPaidDatasetItems || 1000000,
 };
-if (input.maxItems && input.maxItems < state.leftItems) {
-  state.leftItems = input.maxItems;
-}
-
-let isFreeUserExceeding = false;
-const logFreeUserExceeding = () =>
-  console.warn(
-    styleText('bgYellow', ' [WARNING] ') +
-      ' Free users are limited up to 10 items per run. Please upgrade to a paid plan to scrape more items.',
-  );
-
-if (!isPaying) {
-  if (state.leftItems > 10) {
-    isFreeUserExceeding = true;
-    state.leftItems = 10;
-    logFreeUserExceeding();
-  }
-}
 
 const pushItem = async (item: Profile | ProfileShort, payments: string[]) => {
   console.info(`Scraped profile ${item.linkedinUrl || item?.publicIdentifier || item?.id}`);
@@ -173,7 +153,6 @@ const scraper = createLinkedinScraper({
     'x-apify-user-is-paying2': String(isPaying),
     'x-apify-max-total-charge-usd': String(pricingInfo.maxTotalChargeUsd),
     'x-apify-is-pay-per-event': String(pricingInfo.isPayPerEvent),
-    'x-apify-user-left-items': String(state.leftItems),
     'x-apify-user-max-items': String(input.maxItems),
   },
 });
@@ -188,11 +167,6 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
   optionsOverride: {
     fetchItem: async ({ item }) => {
       if (item?.id || item?.linkedinUrl) {
-        state.leftItems -= 1;
-        if (state.leftItems < 0) {
-          return { skipped: true, done: true };
-        }
-
         if (profileScraperMode === ProfileScraperMode.SHORT && item?.linkedinUrl) {
           return {
             status: 200,
@@ -213,7 +187,12 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
   },
   onPageFetched: async ({ data }) => {
     if (data?.pagination && data?.status !== 429) {
-      Actor.charge({ eventName: 'search-page' });
+      const chargeResult = await Actor.charge({ eventName: 'search-page' });
+      if (chargeResult.eventChargeLimitReached) {
+        await Actor.exit({
+          statusMessage: 'max charge reached',
+        });
+      }
     }
   },
 
@@ -235,15 +214,6 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
   overridePageConcurrency: 1,
 };
 
-if (state.leftItems <= 0) {
-  console.warn(
-    styleText('bgYellow', ' [WARNING] ') +
-      ' No items left to scrape. Please increase the maxItems input or reduce the filters.',
-  );
-  await Actor.exit();
-  process.exit(0);
-}
-
 const itemQuery = {
   search: `${query.firstName} ${query.lastName}`.trim(),
   ...query,
@@ -262,12 +232,8 @@ for (const key of Object.keys(itemQuery) as (keyof typeof itemQuery)[]) {
 await scraper.scrapeProfiles({
   query: itemQuery,
   ...scrapeParams,
-  maxItems: state.leftItems,
+  maxItems: input.maxItems,
 });
-
-if (isFreeUserExceeding) {
-  logFreeUserExceeding();
-}
 
 // Gracefully exit the Actor process. It's recommended to quit all Actors with an exit().
 await Actor.exit();
