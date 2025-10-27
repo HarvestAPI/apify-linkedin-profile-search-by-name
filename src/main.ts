@@ -179,6 +179,11 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
           url: `https://www.linkedin.com/in/${item.publicIdentifier || item.id}`,
           findEmail: profileScraperMode === ProfileScraperMode.EMAIL,
           short: true,
+          addHeaders: {
+            'x-sub-user': (isPaying ? user?.username : '') || '',
+            'x-concurrency': isPaying ? '150' : '1',
+            'x-queue-size': isPaying ? '50' : '5',
+          },
         });
       }
 
@@ -207,7 +212,7 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
 
   addListingHeaders: {
     'x-sub-user': (isPaying ? user?.username : '') || '',
-    'x-concurrency': isPaying ? '200' : '1',
+    'x-concurrency': isPaying ? '150' : '1',
     'x-queue-size': isPaying ? '50' : '5',
   },
   disableLog: true,
