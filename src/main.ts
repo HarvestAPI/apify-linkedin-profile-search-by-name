@@ -204,6 +204,11 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
     }
   },
 
+  addListingHeaders: {
+    'x-sub-user': (isPaying ? user?.username : '') || '',
+    'x-concurrency': (isPaying ? '' : '1') || '',
+    'x-queue-size': isPaying ? '20' : '5',
+  },
   disableLog: true,
   overrideConcurrency: profileScraperMode === ProfileScraperMode.EMAIL ? 10 : 8,
   overridePageConcurrency: 1,
