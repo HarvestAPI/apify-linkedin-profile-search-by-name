@@ -182,7 +182,6 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
         return scraper.getProfile({
           url: `https://www.linkedin.com/in/${item.publicIdentifier || item.id}`,
           findEmail: profileScraperMode === ProfileScraperMode.EMAIL,
-          short: true,
         });
       }
 
