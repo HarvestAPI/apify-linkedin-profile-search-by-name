@@ -24,13 +24,15 @@
       "description": "Last name of the person to search for.",
       "prefill": "Nadella"
     },
-
-    "maxItems": {
-      "title": "Maximum number of profiles to scrape for all queries",
+    "maxPages": {
+      "title": "Maximum number of pages to scrape",
       "type": "integer",
-      "description": "Maximum number of profiles to scrape for all queries. The actor will stop scraping when this limit is reached.",
-      "prefill": 20
+      "description": "Maximum number of pages to scrape for each query. The actor will stop scraping when this limit is reached.",
+      "prefill": 1,
+      "minimum": 1,
+      "maximum": 100
     },
+
     "locations": {
       "title": "Locations Filter",
       "type": "array",
@@ -78,13 +80,10 @@
       "description": "Filter Profiles by these LinkedIn industry IDs. Example: `4` for 'Software Development'. Full list: `https://github.com/HarvestAPI/linkedin-industry-codes-v2/blob/main/linkedin_industry_code_v2_all_eng_with_header.csv`",
       "maxItems": 20
     },
-    "maxPages": {
-      "title": "Maximum number of pages to scrape",
+    "maxItems": {
+      "title": "Maximum number of profiles to scrape",
       "type": "integer",
-      "description": "Maximum number of pages to scrape for each query. The actor will stop scraping when this limit is reached.",
-      "prefill": 100,
-      "minimum": 1,
-      "maximum": 100
+      "description": "Maximum number of profiles to scrape. The actor will stop scraping when this limit is reached."
     }
   },
   "required": ["firstName", "profileScraperMode"]
