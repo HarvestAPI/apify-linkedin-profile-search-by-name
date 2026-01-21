@@ -87,5 +87,5 @@
       "maximum": 100
     }
   },
-  "required": ["firstName", "lastName", "profileScraperMode"]
+  "required": ["firstName", "profileScraperMode"]
 }

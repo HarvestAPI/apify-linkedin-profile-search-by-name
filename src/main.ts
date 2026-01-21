@@ -58,9 +58,9 @@ if (input.maxPages < 1 || input.maxPages > 100) {
   input.maxPages = 100;
 }
 
-if (!input.firstName || !input.lastName) {
+if (!input.firstName && !input.lastName) {
   console.warn(
-    styleText('bgYellow', ' [WARNING] ') + ' Please provide firstName and lastName inputs.',
+    styleText('bgYellow', ' [WARNING] ') + ' Please provide firstName or lastName inputs.',
   );
   await Actor.exit();
   process.exit(0);
@@ -156,7 +156,7 @@ const scraper = createLinkedinScraper({
     'x-apify-user-max-items': String(input.maxItems),
 
     'x-sub-user': (isPaying ? user?.username : '') || '',
-    'x-concurrency': isPaying ? '100' : '1',
+    'x-concurrency': isPaying ? '200' : '1',
     'x-queue-size': isPaying ? '50' : '5',
   },
 });
