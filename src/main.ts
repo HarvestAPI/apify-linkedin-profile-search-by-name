@@ -43,6 +43,7 @@ interface Input {
   industryIds?: string[];
   maxItems?: number;
   maxPages?: number;
+  strictSearch?: boolean;
 }
 
 // Structure of input is defined in input_schema.json
@@ -60,7 +61,7 @@ if (input.maxPages < 1 || input.maxPages > 100) {
 
 if (!input.firstName && !input.lastName) {
   console.warn(
-    styleText('bgYellow', ' [WARNING] ') + ' Please provide firstName or lastName inputs.',
+    styleText('bgYellow', ' [WARNING] ') + ' Please provide firstName or lastName input.',
   );
   await Actor.exit();
   process.exit(0);
@@ -76,8 +77,8 @@ const query: {
   pastCompany: string[];
   school: string[];
   location: string[];
-  firstName: string;
-  lastName: string;
+  firstName: string | undefined;
+  lastName: string | undefined;
   industryId?: string[];
 } = {
   currentCompany: input.currentCompanies || [],
@@ -216,6 +217,8 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
 const itemQuery = {
   search: `${query.firstName} ${query.lastName}`.trim(),
   ...query,
+  firstName: input.strictSearch ? query.firstName : undefined,
+  lastName: input.strictSearch ? query.lastName : undefined,
 };
 for (const key of Object.keys(itemQuery) as (keyof typeof itemQuery)[]) {
   if (!itemQuery[key]) {

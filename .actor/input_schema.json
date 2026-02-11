@@ -24,6 +24,13 @@
       "description": "Last name of the person to search for.",
       "prefill": "Nadella"
     },
+    "strictSearch": {
+      "title": "Strict Search",
+      "type": "boolean",
+      "description": "Enabling strict search will ensure that only profiles matching both the first and last names exactly are returned.",
+      "default": true
+    },
+
     "maxPages": {
       "title": "Maximum number of pages to scrape",
       "type": "integer",
@@ -86,5 +93,5 @@
       "description": "Maximum number of profiles to scrape. The actor will stop scraping when this limit is reached."
     }
   },
-  "required": ["firstName", "profileScraperMode"]
+  "required": ["profileScraperMode"]
 }
