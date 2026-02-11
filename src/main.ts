@@ -217,8 +217,8 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
 const itemQuery = {
   search: `${query.firstName} ${query.lastName}`.trim(),
   ...query,
-  firstName: input.strictSearch ? query.firstName : undefined,
-  lastName: input.strictSearch ? query.lastName : undefined,
+  firstName: input.strictSearch === false ? undefined : query.firstName,
+  lastName: input.strictSearch === false ? undefined : query.lastName,
 };
 for (const key of Object.keys(itemQuery) as (keyof typeof itemQuery)[]) {
   if (!itemQuery[key]) {
