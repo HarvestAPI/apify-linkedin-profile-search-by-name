@@ -100,12 +100,9 @@ for (const key of Object.keys(query) as (keyof typeof query)[]) {
 
 const { actorId, actorRunId, actorBuildId, userId, actorMaxPaidDatasetItems, memoryMbytes } =
   Actor.getEnv();
-const client = Actor.newClient();
-
-const user = userId ? await client.user(userId).get() : null;
 const cm = Actor.getChargingManager();
 const pricingInfo = cm.getPricingInfo();
-const isPaying = (user as Record<string, any> | null)?.isPaying === false ? false : true;
+const isPaying = !!process.env.APIFY_USER_IS_PAYING;
 
 const state: {
   scrapedItems: number;
@@ -149,16 +146,10 @@ const scraper = createLinkedinScraper({
     'x-apify-actor-build-id': actorBuildId!,
     'x-apify-memory-mbytes': String(memoryMbytes),
     'x-apify-actor-max-paid-dataset-items': String(actorMaxPaidDatasetItems) || '0',
-    'x-apify-username': user?.username || '',
-    'x-apify-user-is-paying': (user as Record<string, any> | null)?.isPaying,
-    'x-apify-user-is-paying2': String(isPaying),
-    'x-apify-max-total-charge-usd': String(pricingInfo.maxTotalChargeUsd),
-    'x-apify-is-pay-per-event': String(pricingInfo.isPayPerEvent),
     'x-apify-user-max-items': String(input.maxItems),
-
-    'x-sub-user': (isPaying ? user?.username : '') || '',
-    'x-concurrency': isPaying ? '200' : '1',
-    'x-queue-size': isPaying ? '50' : '5',
+    'x-apify-user-is-paying': String(isPaying),
+    'x-apify-user-is-paying-2': process.env.APIFY_USER_IS_PAYING || '',
+    'x-apify-max-total-charge-usd': String(pricingInfo.maxTotalChargeUsd),
   },
 });
 
@@ -186,29 +177,31 @@ const scrapeParams: Omit<ScrapeLinkedinProfilesParams, 'query'> = {
         });
       }
 
-      return { skipped: true };
+      return { skipResult: true };
     },
     maxPageNumber: 100,
   },
-  onPageFetched: async ({ data }) => {
+  onPageFetched: async ({ data, page }) => {
+    if (data?.status === 429) {
+      console.error('Too many requests');
+    }
+
     if (data?.pagination && data?.status !== 429) {
+      if (page === 1) {
+        console.info(`Found ${data.pagination.totalElements} profiles total.`);
+      }
+
       const chargeResult = await Actor.charge({ eventName: 'search-page' });
       if (chargeResult.eventChargeLimitReached) {
         await Actor.exit({
           statusMessage: 'max charge reached',
         });
       }
+      console.info(
+        `Fetched page ${data.pagination.pageNumber} with ${data.elements?.length || 0} profiles`,
+      );
     }
   },
-
-  onFirstPageFetched: ({ data }) => {
-    if (data?.status === 429) {
-      console.error('Too many requests');
-    } else if (data?.pagination) {
-      console.info(`Found ${data.pagination.totalElements} profiles total.`);
-    }
-  },
-
   disableLog: true,
   overrideConcurrency: profileScraperMode === ProfileScraperMode.EMAIL ? 10 : 8,
   overridePageConcurrency: 1,
